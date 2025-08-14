@@ -40,5 +40,4 @@ jobs:
     with:
       image: ${{ needs.build-image.outputs.image }}
       digest: ${{ needs.build-image.outputs.digest }}
-      upload-artifact: true    # save .intoto.jsonl as workflow artifact
     secrets: inherit           # pass OIDC and repo secrets to reusable workflow
