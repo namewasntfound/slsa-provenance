@@ -1,4 +1,4 @@
-name: Build Go project with SLSA L3 provenance
+name: Build Go & SLSA L3 Provenance
 
 on:
   workflow_dispatch:
@@ -10,10 +10,10 @@ permissions:
   packages: write
 
 jobs:
-  generate-provenance:
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_go_slsa3.yml@v2.1.0
+  build-go-and-provenance:
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.1.1
     with:
-      go-version: '1.24'
+      go-version: '1.21'
       upload-release-assets: false
-      config-path: .
+      config-path: '.'
     secrets: inherit
