@@ -1,4 +1,3 @@
-# .github/workflows/build-provenance.yml
 name: Build image and SLSA L3 provenance (no push)
 
 on:
@@ -7,9 +6,8 @@ on:
 permissions:
   contents: read
   id-token: write
-
 env:
-  IMAGE_NAME: atitestslsa
+  IMAGE_NAME: atitest
   IMAGE_TAG: test-slsa
 
 jobs:
@@ -33,18 +31,15 @@ jobs:
             --provenance=false \
             --output=type=docker \
             .
-          # Save digest of the local image
           digest=$(docker image inspect "${IMAGE_NAME}:${IMAGE_TAG}" --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
           echo "digest=$digest" >> $GITHUB_OUTPUT
 
   generate-provenance:
     needs: build-image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate SLSA provenance (container)
-        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
-        with:
-          image: ${{ needs.build-image.outputs.image }}
-          digest: ${{ needs.build-image.outputs.digest }}
-          upload-artifact: true   # will save .intoto.jsonl in workflow artifacts
-          upload: false           # disables pushing provenance to registry
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+    with:
+      image: ${{ needs.build-image.outputs.image }}
+      digest: ${{ needs.build-image.outputs.digest }}
+      upload: false            # don't push provenance to registry
+      upload-artifact: true    # save .intoto.jsonl as workflow artifact
+    secrets: inherit           # pass OIDC and repo secrets to reusable workflow
